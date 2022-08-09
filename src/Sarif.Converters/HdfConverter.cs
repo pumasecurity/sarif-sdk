@@ -41,7 +41,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
                         Version = hdfFile.Version,
                         InformationUri = new Uri(ToolInformationUri),
                         Rules = rulesAndResults.Item1,
-                        SupportedTaxonomies = new List<ToolComponentReference>() { new ToolComponentReference() { Name = "NIST SP800-53 v5", Guid = "AAFBAB93-5201-419E-8443-D4925C542398" } }
+                        SupportedTaxonomies = new List<ToolComponentReference>() { new ToolComponentReference() { Name = "NIST SP800-53 v5", Guid = "AAFBAB93-5201-419E-8443-D4925C542398" } },
                     }
                 },
                 ExternalPropertyFileReferences = new ExternalPropertyFileReferences()
@@ -60,6 +60,12 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
                 },
                 Results = rulesAndResults.Item2,
             };
+
+            //Set additional source tool metadata
+            run.Tool.Driver.SetProperty("targetId", hdfFile.Platform.TargetId);
+            run.Tool.Driver.SetProperty("profileName", hdfFile.Profiles.FirstOrDefault()?.Name);
+            run.Tool.Driver.SetProperty("profileVersion", hdfFile.Profiles.FirstOrDefault()?.Version);
+
 
             PersistResults(output, rulesAndResults.Item2, run);
         }
@@ -126,7 +132,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
                     RuleId = execJsonControl.Id,
                     Message = new Message
                     {
-                        Text = AppendPeriod(controlResult.CodeDesc),
+                        Text = AppendMessage(controlResult.CodeDesc, controlResult.Message),
                     },
                     Level = SarifLevelFromHdfImpact(execJsonControl.Impact),
                     Rank = SarifRankFromHdfImpact(execJsonControl.Impact),
@@ -175,6 +181,9 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
             */
             // both range from 0 to 1, return as it is
             impact;
+
+        private static string AppendMessage(string codeDescription, string message) =>
+            string.IsNullOrWhiteSpace(message) ? AppendPeriod(codeDescription) : $"{AppendPeriod(codeDescription)}{Environment.NewLine}{Environment.NewLine}{AppendPeriod(message)}";
 
         private static string AppendPeriod(string text) =>
             text.EndsWith(PeriodString, StringComparison.OrdinalIgnoreCase) ? text : text + PeriodString;
