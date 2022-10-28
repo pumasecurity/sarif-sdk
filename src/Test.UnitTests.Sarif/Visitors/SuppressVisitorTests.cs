@@ -301,6 +301,7 @@ namespace Microsoft.CodeAnalysis.Sarif.UnitTests.Visitors
                 uuids = true,
                 timestamps = false,
                 expiryInDays = 3,
+                expiryUtc = default(DateTime?),
                 suppressionStatus = SuppressionStatus.Accepted,
                 resultGuids = default(List<string>),
             };
@@ -313,6 +314,7 @@ namespace Microsoft.CodeAnalysis.Sarif.UnitTests.Visitors
                                               testCase.uuids,
                                               testCase.timestamps,
                                               testCase.expiryInDays,
+                                              testCase.expiryUtc,
                                               testCase.suppressionStatus,
                                               testCase.resultGuids);
 
@@ -349,6 +351,7 @@ namespace Microsoft.CodeAnalysis.Sarif.UnitTests.Visitors
                 uuids = true,
                 timestamps = false,
                 expiryInDays = 1,
+                expiryUtc = default(DateTime?),
                 suppressionStatus = SuppressionStatus.Accepted,
                 resultGuids = default(List<string>),
             };
@@ -361,6 +364,7 @@ namespace Microsoft.CodeAnalysis.Sarif.UnitTests.Visitors
                                               testCase.uuids,
                                               testCase.timestamps,
                                               testCase.expiryInDays,
+                                              testCase.expiryUtc,
                                               testCase.suppressionStatus,
                                               testCase.resultGuids);
 
