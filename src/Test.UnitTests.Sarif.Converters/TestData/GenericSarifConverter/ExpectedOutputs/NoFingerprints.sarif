@@ -28,7 +28,12 @@
               }
             }
           ],
-          "fingerprints": { "0": "57dc6c01ffce4b91b220a21a4965a006" }
+          "partialFingerprints": {
+            "id": "84862db3a294b35e364182793aa45144250a488edd2e03573fc1378a9f8f2217",
+            "artifacturi": "bd56ee96766f8c75b71b27fecbfd16fa51a700c3a04715e9f8fa4cd780074a65",
+            "startline": "eb1e33e8a81b697b75855af6bfcdbcbf7cbbde9f94962ceaec1ed8af21f5a50f",
+            "endline": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
+          }
         }
       ],
       "tool": {
@@ -49,7 +54,7 @@
               "help": {
                 "markdown": "Markdown text",
                 "text": "text"
-              },              
+              },
               "messageStrings": {
                 "Note_Default": {
                   "text": "{0}: The 'message' property of this result contains a 'text' property. Consider replacing it with 'id' and 'arguments' properties. This potentially reduces the log file size, allows the message text to be improved without modifying the log file, and enables localization."

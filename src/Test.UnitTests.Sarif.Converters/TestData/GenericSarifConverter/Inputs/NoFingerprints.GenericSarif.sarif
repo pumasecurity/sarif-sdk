@@ -27,8 +27,7 @@
                 }
               }
             }
-          ],
-          "fingerprints": { "0": "57dc6c01ffce4b91b220a21a4965a006" }
+          ]
         }
       ],
       "tool": {
@@ -49,7 +48,7 @@
               "help": {
                 "markdown": "Markdown text",
                 "text": "text"
-              },              
+              },
               "messageStrings": {
                 "Note_Default": {
                   "text": "{0}: The 'message' property of this result contains a 'text' property. Consider replacing it with 'id' and 'arguments' properties. This potentially reduces the log file size, allows the message text to be improved without modifying the log file, and enables localization."

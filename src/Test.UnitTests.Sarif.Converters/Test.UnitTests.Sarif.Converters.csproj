@@ -22,6 +22,7 @@
     <None Remove="TestData\ClangTidy\**" />
     <None Remove="TestData\FlawFinder\**" />
     <None Remove="TestData\Hdf\**" />
+    <None Remove="TestData\GenericSarifConverter\ExpectedOutputs\NoFingerprints.sarif" />
     <None Remove="TestData\GenericSarifConverter\ExpectedOutputs\ValidResults.sarif" />
     <None Remove="TestData\GenericSarifConverter\ExpectedOutputs\NoResults.sarif" />
     <None Remove="TestData\GenericSarifConverter\ExpectedOutputs\HelpNoText.sarif" />
@@ -29,6 +30,7 @@
     <None Remove="TestData\GenericSarifConverter\ExpectedOutputs\NoHelp.sarif" />
     <None Remove="TestData\GenericSarifConverter\Inputs\HelpNoText.GenericSarif.sarif" />
     <None Remove="TestData\GenericSarifConverter\Inputs\HelpNoMarkdown.GenericSarif.sarif" />
+    <None Remove="TestData\GenericSarifConverter\Inputs\NoFingerprints.GenericSarif.sarif" />
     <None Remove="TestData\GenericSarifConverter\Inputs\ValidResults.GenericSarif.sarif" />
     <None Remove="TestData\GenericSarifConverter\Inputs\NoHelp.GenericSarif.sarif" />
     <None Remove="TestData\GenericSarifConverter\Inputs\NoResults.GenericSarif.sarif" />
@@ -90,6 +92,8 @@
     <EmbeddedResource Include="TestData\FlawFinderConverter\Inputs\OldVersionResult.csv" />
     <EmbeddedResource Include="TestData\FlawFinderConverter\Inputs\OnlyHeaderLine.csv" />
     <EmbeddedResource Include="TestData\FlawFinderConverter\Inputs\ValidResults.csv" />
+    <EmbeddedResource Include="TestData\GenericSarifConverter\ExpectedOutputs\NoFingerprints.sarif" />
+    <EmbeddedResource Include="TestData\GenericSarifConverter\Inputs\NoFingerprints.GenericSarif.sarif" />
     <EmbeddedResource Include="TestData\HdfConverter\ExpectedOutputs\NoResults.sarif" />
     <EmbeddedResource Include="TestData\HdfConverter\ExpectedOutputs\ValidResults.sarif" />
     <EmbeddedResource Include="TestData\HdfConverter\Inputs\Empty.json" />
