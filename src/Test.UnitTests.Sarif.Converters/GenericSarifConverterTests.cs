@@ -8,7 +8,6 @@ using Microsoft.CodeAnalysis.Sarif.Writers;
 
 using Xunit;
 using FluentAssertions;
-using Newtonsoft.Json;
 
 namespace Microsoft.CodeAnalysis.Sarif.Converters
 {
@@ -69,6 +68,15 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
             string expectedOutput = Extractor.GetResourceExpectedOutputsText("HelpNoMarkdown.sarif");
             RunTestCase(input, expectedOutput);
         }
+
+        [Fact]
+        public void Converter_WhenInputContainsNoFingerprints_ReturnsExpectedOutput()
+        {
+            string input = Extractor.GetResourceInputText("NoFingerprints.GenericSarif.sarif");
+            string expectedOutput = Extractor.GetResourceExpectedOutputsText("NoFingerprints.sarif");
+            RunTestCase(input, expectedOutput);
+        }
+
 
         private static readonly TestAssetResourceExtractor Extractor = new TestAssetResourceExtractor(typeof(GenericSarifConverterTests));
         private const string ResourceNamePrefix = ToolFormat.GenericSarif;

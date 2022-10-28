@@ -5,11 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml;
-using System.Xml.Serialization;
 
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.CodeAnalysis.Sarif.Converters
 {
@@ -24,15 +21,15 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
 
             var serializer = new JsonSerializer() { };
 
-            using (JsonTextReader reader = new JsonTextReader(new StreamReader(input)))
+            using (var reader = new JsonTextReader(new StreamReader(input)))
             {
-                var log = serializer.Deserialize<SarifLog>(reader);
+                SarifLog log = serializer.Deserialize<SarifLog>(reader);
 
-                foreach (var run in log.Runs)
+                foreach (Run run in log.Runs)
                 {
                     if (run?.Tool?.Driver?.Rules?.Count > 0)
                     {
-                        foreach (var rule in run.Tool.Driver.Rules)
+                        foreach (ReportingDescriptor rule in run.Tool.Driver.Rules)
                         {
                             if (rule.Help != null)
                             {
@@ -50,6 +47,59 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
                                 }
                             }
 
+                        }
+                    }
+                    
+                    if (run?.Results != null)
+                    {
+                        foreach (Result runResult in run?.Results)
+                        {
+                            if (runResult.Fingerprints == null || runResult.Fingerprints.Count == 0)
+                            {
+                                if (runResult.PartialFingerprints == null || runResult.PartialFingerprints.Count == 0)
+                                {
+                                    IDictionary<string, string> partialFingerprints = new Dictionary<string, string>();
+                                    partialFingerprints.Add("id", HashUtilities.ComputeSha256HashValue(runResult.RuleId).ToLower());
+
+                                    if (runResult.Locations != null)
+                                    {
+                                        foreach (Location runResultLocation in runResult.Locations)
+                                        {
+                                            PhysicalLocation physicalLocation = runResultLocation.PhysicalLocation;
+                                            if (physicalLocation != null)
+                                            {
+                                                if (physicalLocation.ArtifactLocation != null)
+                                                {
+                                                    partialFingerprints.Add("artifacturi",
+                                                        HashUtilities
+                                                            .ComputeSha256HashValue(physicalLocation.ArtifactLocation.Uri
+                                                                .ToString()).ToLower());
+                                                }
+
+                                                Region physicalLocationRegion = physicalLocation.Region;
+
+                                                if (physicalLocationRegion != null)
+                                                {
+                                                    partialFingerprints.Add("startline",
+                                                        HashUtilities
+                                                            .ComputeSha256HashValue(physicalLocationRegion.StartLine
+                                                                .ToString()).ToLower());
+
+                                                    partialFingerprints.Add("endline",
+                                                        HashUtilities
+                                                            .ComputeSha256HashValue(physicalLocationRegion.EndLine
+                                                                .ToString()).ToLower());
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if (partialFingerprints.Any())
+                                    {
+                                        runResult.PartialFingerprints = partialFingerprints;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
