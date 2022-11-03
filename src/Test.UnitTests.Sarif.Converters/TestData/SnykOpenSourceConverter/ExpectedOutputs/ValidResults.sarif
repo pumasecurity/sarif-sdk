@@ -27,7 +27,7 @@
                 "markdown": "Insecure Defaults in Newtonsoft.Json@10.0.3"
               },
               "properties": {
-                "security-severity": 7.5,
+                "security-severity": "7.5",
                 "tags": ["security","nuget","CWE-755"]
               }
             }
