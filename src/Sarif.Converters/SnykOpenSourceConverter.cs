@@ -126,7 +126,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
             }
 
             //Use for GH Security Advisories
-            descriptor.SetProperty("security-severity", item.Cvss3BaseScore);
+            descriptor.SetProperty("security-severity", item.Cvss3BaseScore.ToString("F1"));
 
             //Tags for GH filtering
             var tags = new List<string>()

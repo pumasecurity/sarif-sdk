@@ -51,7 +51,7 @@
                 "markdown": "Rule id 2 title"
               },
               "properties": {
-                "security-severity": 8.0,
+                "security-severity": "8.0",
                 "tags": ["security"]
               }
             }
