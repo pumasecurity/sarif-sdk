@@ -16,6 +16,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
         private readonly LogReader<List<Test>> logReader;
         private const string _CWE_IDENTIFIER_KEY = "CWE";
         private const string _CVE_IDENTIFIER_KEY = "CVE";
+        private const string _LICENSE_RESULT_TYPE = "license";
 
         public SnykOpenSourceConverter()
         {
@@ -125,8 +126,14 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
                 };
             }
 
+            //Set the type
+            descriptor.SetProperty("type", item.Type ?? "vulnerability");
+
             //Use for GH Security Advisories
-            descriptor.SetProperty("security-severity", item.Cvss3BaseScore.ToString("F1"));
+            FailureLevel level = FailureLevel.None;
+            double rank = RankConstants.None;
+            getResultSeverity(item.Cvss3BaseScore, item.SeverityWithCritical, out level, out rank);
+            descriptor.SetProperty("security-severity", rank.ToString("F1"));
 
             //Tags for GH filtering
             var tags = new List<string>()
@@ -147,20 +154,31 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
 
         private Result CreateResult(Vulnerability item, Test test)
         {
+            //Set message text
+            var message = string.Empty;
+            if (item.Type == _LICENSE_RESULT_TYPE)
+            {
+                message = string.Join(" ", item.LegalInstructions.Select(i => i.LegalContent.Trim()));
+            }
+            else
+            {
+                message = $"This file introduces a vulnerable {item.PackageName} package with a {item.SeverityWithCritical} severity vulnerability.";
+            }
+
             //set the result metadata
             Result result = new Result
             {
                 RuleId = item.Id,
                 Message = new Message
                 {
-                    Text = $"This file introduces a vulnerable {item.PackageName} package with a {item.SeverityWithCritical} severity vulnerability."
+                    Text = message,
                 },
             };
 
             //Set the kind, level, and rank based on cvss3 score
             FailureLevel level = FailureLevel.None;
             double rank = RankConstants.None;
-            getResultSeverity(item.Cvss3BaseScore, out level, out rank);
+            getResultSeverity(item.Cvss3BaseScore, item.SeverityWithCritical, out level, out rank);
 
             //Set the properties
             result.Kind = ResultKind.Fail;
@@ -246,7 +264,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
             return result;
         }
 
-        private void getResultSeverity(double cvss3score, out FailureLevel level, out double rank)
+        private void getResultSeverity(double cvss3score, string severityWithCritical, out FailureLevel level, out double rank)
         {
             // Default values
             level = FailureLevel.None;
@@ -273,6 +291,26 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
             {
                 level = FailureLevel.Note;
                 rank = cvss3score;
+            }
+            else if (severityWithCritical.Equals("critical", StringComparison.OrdinalIgnoreCase))
+            {
+                level = FailureLevel.Error;
+                rank = RankConstants.Critical;
+            }
+            else if (severityWithCritical.Equals("high", StringComparison.OrdinalIgnoreCase))
+            {
+                level = FailureLevel.Error;
+                rank = RankConstants.High;
+            }
+            else if (severityWithCritical.Equals("medium", StringComparison.OrdinalIgnoreCase))
+            {
+                level = FailureLevel.Warning;
+                rank = RankConstants.Medium;
+            }
+            else if (severityWithCritical.Equals("low", StringComparison.OrdinalIgnoreCase))
+            {
+                level = FailureLevel.Note;
+                rank = RankConstants.Low;
             }
         }
     }
