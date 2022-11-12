@@ -27,8 +27,26 @@
                 "markdown": "Insecure Defaults in Newtonsoft.Json@10.0.3"
               },
               "properties": {
+                "type": "vulnerability",
                 "security-severity": "7.5",
                 "tags": ["security","nuget","CWE-755"]
+              }
+            },
+            {
+              "id": "snyk:lic:npm:lodash:LGPL-3.0",
+              "name": "lodash@0.26.2",
+              "fullDescription": {
+                "text": "LGPL-3.0 license",
+                "markdown": "LGPL-3.0 license"
+              },
+              "shortDescription": {
+                "text": "LGPL-3.0 license in lodash@0.26.2",
+                "markdown": "LGPL-3.0 license in lodash@0.26.2"
+              },
+              "properties": {
+                "type": "license",
+                "security-severity": "6.0",
+                "tags": ["security","npm"]
               }
             }
           ]
@@ -70,6 +88,41 @@
             "cve": [],
             "cwe": ["CWE-755"],
             "xref": ["GHSA-5crp-9r3c-p9vr"]
+          }
+        },
+        {
+          "ruleId": "snyk:lic:npm:lodash:LGPL-3.0",
+          "message": {
+            "text": "Legal pre-approves if source code is only dynamically linking to unmodified open source code."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/Common/packages.config",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "0": "dd1037901981094b0265c5ebc2a1c4655d533d2f1d0ce97567acdec6083c8d8c"
+          },
+          "rank": 6.0,
+          "properties": {
+            "packageManager": "npm",
+            "packageName": "lodash",
+            "packageVersion": "0.26.2",
+            "cvss3BaseScore": "0",
+            "cvss3Vector": null,
+            "vulnPublicationDate": "2022-11-03T08:06:23.06Z",
+            "semanticVersion": ["[0,)"],
+            "cve": [],
+            "cwe": [],
+            "xref": []
           }
         }
       ],
