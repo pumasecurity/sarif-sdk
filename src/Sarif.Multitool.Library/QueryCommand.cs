@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -16,7 +17,8 @@ namespace Microsoft.CodeAnalysis.Sarif.Multitool
 {
     public class QueryCommand : CommandBase
     {
-        private const int TOO_MANY_RESULTS = 2;
+        private const int QUERY_FAILURE = -1;
+        private const int TOO_MANY_RESULTS = -2;
 
         private readonly IFileSystem _fileSystem;
 
@@ -34,14 +36,14 @@ namespace Microsoft.CodeAnalysis.Sarif.Multitool
             catch (Exception ex) when (!Debugger.IsAttached)
             {
                 Console.WriteLine(ex);
-                return FAILURE;
+                return QUERY_FAILURE;
             }
         }
 
         public int RunWithoutCatch(QueryOptions options)
         {
             bool valid = DriverUtilities.ReportWhetherOutputFileCanBeCreated(options.OutputFilePath, options.Force, _fileSystem);
-            if (!valid) { return FAILURE; }
+            if (!valid) { return QUERY_FAILURE; }
 
             Stopwatch w = Stopwatch.StartNew();
             int originalTotal = 0;
@@ -53,6 +55,10 @@ namespace Microsoft.CodeAnalysis.Sarif.Multitool
 
             // Read the log
             SarifLog log = ReadSarifFile<SarifLog>(_fileSystem, options.InputFilePath);
+
+            // Null ref guard
+            if (log.Runs == null)
+                log.Runs = new List<Run>();
 
             foreach (Run run in log.Runs)
             {
