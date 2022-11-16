@@ -14,6 +14,16 @@ namespace Microsoft.CodeAnalysis.Sarif.Multitool
         private static readonly TestAssetResourceExtractor s_extractor = new TestAssetResourceExtractor(typeof(QueryCommandTests));
 
         [Fact]
+        public void QueryCommand_NullRun()
+        {
+            string filePath = "NullRun.sarif";
+            File.WriteAllText(filePath, s_extractor.GetResourceText(filePath));
+
+            // No filter
+            RunAndVerifyCount(0, new QueryOptions() { Expression = "", InputFilePath = filePath });
+        }
+
+        [Fact]
         public void QueryCommand_Basics()
         {
             string filePath = "elfie-arriba.sarif";
@@ -44,7 +54,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Multitool
 
             // Verify threshold logging
             Assert.Equal(0, new QueryCommand().RunWithoutCatch(new QueryOptions() { Expression = "RuleId = 'CSCAN0060/0'", NonZeroExitCodeIfCountOver = 4, InputFilePath = filePath }));
-            Assert.Equal(2, new QueryCommand().RunWithoutCatch(new QueryOptions() { Expression = "RuleId = 'CSCAN0060/0'", NonZeroExitCodeIfCountOver = 3, InputFilePath = filePath }));
+            Assert.Equal(-2, new QueryCommand().RunWithoutCatch(new QueryOptions() { Expression = "RuleId = 'CSCAN0060/0'", NonZeroExitCodeIfCountOver = 3, InputFilePath = filePath }));
 
             // Verify output file
             string outputFilePath = "elfie-arriba.CSCAN0020.actual.sarif";

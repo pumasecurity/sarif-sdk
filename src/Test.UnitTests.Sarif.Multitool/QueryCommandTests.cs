@@ -57,9 +57,9 @@ namespace Microsoft.CodeAnalysis.Sarif.Multitool
         [Fact]
         public void QueryCommand_PerformsStringSpecificComparisons()
         {
-            RunAndVerifyCount(1, "properties.confidence : 95");     // contains
-            RunAndVerifyCount(3, "properties.confidence |> 0.");    // startswith
-            RunAndVerifyCount(1, "properties.confidence >| 9");     // endswith
+            RunAndVerifyCount(-1, "properties.confidence : 95");     // contains
+            RunAndVerifyCount(-1, "properties.confidence |> 0.");    // startswith
+            RunAndVerifyCount(-1, "properties.confidence >| 9");     // endswith
         }
 
         [Fact]
@@ -101,7 +101,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Multitool
                 ReturnCount = true
             };
 
-            int exitCode = new QueryCommand().RunWithoutCatch(options);
+            int exitCode = new QueryCommand().Run(options);
             exitCode.Should().Be(expectedCount);
         }
     }
