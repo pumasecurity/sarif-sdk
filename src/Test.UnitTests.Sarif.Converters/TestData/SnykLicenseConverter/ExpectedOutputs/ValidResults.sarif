@@ -1,0 +1,64 @@
+{
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "SnykLicense",
+          "fullName": "SnykLicense",
+          "version": "1.0.0",
+          "semanticVersion": "1.0.0",
+          "informationUri": "https://docs.snyk.io/products/snyk-open-source/licenses",
+          "rules": [
+            {
+              "id": "snyk:lic:npm:lodash:LGPL-3.0",
+              "name": "LGPL-3.0",
+              "fullDescription": {
+                "text": "LGPL-3.0 license in lodash@0.26.2",
+                "markdown": "LGPL-3.0 license in lodash@0.26.2"
+              },
+              "properties": {
+                "type": "license",
+                "security-severity": "6.0",
+                "tags": ["security","LGPL-3.0","npm"]
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "snyk:lic:npm:lodash:LGPL-3.0",
+          "message": {
+            "text": "Legal pre-approves if source code is only dynamically linking to unmodified open source code."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/Common/packages.config",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "0": "49e1a1bb11ae175cbf23cddefd283dc23b7d89412b30d04e7158257c2236b29a"
+          },
+          "rank": 6.0,
+          "properties": {
+            "packageManager": "npm",
+            "packageName": "lodash",
+            "packageVersion": "0.26.2",
+            "semanticVersion": ["[0,)"]
+          }
+        }
+      ],
+      "columnKind": "utf16CodeUnits"
+    }
+  ]
+}

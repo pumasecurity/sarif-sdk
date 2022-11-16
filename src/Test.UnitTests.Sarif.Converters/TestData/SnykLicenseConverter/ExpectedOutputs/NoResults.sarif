@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "SnykLicense",
+          "fullName": "SnykLicense",
+          "version": "1.0.0",
+          "semanticVersion": "1.0.0",
+          "informationUri": "https://docs.snyk.io/products/snyk-open-source/licenses"
+        }
+      },
+      "results": [],
+      "columnKind": "utf16CodeUnits"
+    }
+  ]
+}

@@ -89,6 +89,7 @@ Run ```Sarif.Multitool convert --help``` for the current list.
 - Pylint
 - SemmleQL
 - SnykOpenSource
+- SnykLicense
 - StaticDriverVerifier
 - TSLint
 

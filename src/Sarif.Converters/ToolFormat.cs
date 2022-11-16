@@ -57,6 +57,9 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
         /// <summary>SnykOpenSource's file format.</summary>
         public const string SnykOpenSource = nameof(SnykOpenSource);
 
+        /// <summary>SnykLicense's file format.</summary>
+        public const string SnykLicense = nameof(SnykLicense);
+
         /// <summary>Semmle's file format.</summary>
         public const string SemmleQL = nameof(SemmleQL);
 
@@ -67,6 +70,6 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
         public const string TSLint = nameof(TSLint);
 
         /// <summary>MSBuild's build log format, from which diagnostic messages can be parsed.</summary>
-        public const string MSBuild = nameof(MSBuild);        
+        public const string MSBuild = nameof(MSBuild);
     }
 }
