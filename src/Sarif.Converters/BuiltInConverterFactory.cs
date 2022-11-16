@@ -34,12 +34,13 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
             CreateConverterRecord<FortifyFprConverter>(result, ToolFormat.FortifyFpr);
             CreateConverterRecord<FxCopConverter>(result, ToolFormat.FxCop);
             CreateConverterRecord<FlawFinderConverter>(result, ToolFormat.FlawFinder);
-            CreateConverterRecord<GenericSarifConverter>(result, ToolFormat.GenericSarif);            
+            CreateConverterRecord<GenericSarifConverter>(result, ToolFormat.GenericSarif);
             CreateConverterRecord<HdfConverter>(result, ToolFormat.Hdf);
             CreateConverterRecord<NessusConverter>(result, ToolFormat.Nessus);
             CreateConverterRecord<PREfastConverter>(result, ToolFormat.PREfast);
             CreateConverterRecord<PylintConverter>(result, ToolFormat.Pylint);
             CreateConverterRecord<SnykOpenSourceConverter>(result, ToolFormat.SnykOpenSource);
+            CreateConverterRecord<SnykLicenseConverter>(result, ToolFormat.SnykLicense);
             CreateConverterRecord<SemmleQLConverter>(result, ToolFormat.SemmleQL);
             CreateConverterRecord<StaticDriverVerifierConverter>(result, ToolFormat.StaticDriverVerifier);
             CreateConverterRecord<TSLintConverter>(result, ToolFormat.TSLint);

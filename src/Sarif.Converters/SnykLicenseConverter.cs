@@ -11,19 +11,19 @@ using Microsoft.CodeAnalysis.Sarif.Converters.SnykOpenSourceObjectModel;
 
 namespace Microsoft.CodeAnalysis.Sarif.Converters
 {
-    public class SnykOpenSourceConverter : ToolFileConverterBase
+    public class SnykLicenseConverter : ToolFileConverterBase
     {
         private readonly LogReader<List<Test>> logReader;
         private const string _CWE_IDENTIFIER_KEY = "CWE";
         private const string _CVE_IDENTIFIER_KEY = "CVE";
         private const string _LICENSE_RESULT_TYPE = "license";
 
-        public SnykOpenSourceConverter()
+        public SnykLicenseConverter()
         {
             logReader = new SnykOpenSourceReader();
         }
 
-        public override string ToolName => ToolFormat.SnykOpenSource;
+        public override string ToolName => ToolFormat.SnykLicense;
 
         public override void Convert(Stream input, IResultLogWriter output, OptionallyEmittedData dataToInsert)
         {
@@ -47,8 +47,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
             run.Tool.Driver.Rules = new List<ReportingDescriptor>();
             foreach (Test test in snykTests.Where(i => !i.Ok))
             {
-                //Process non-license vulnerabilities
-                foreach (Vulnerability vulnerability in test.Vulnerabilities.Where(i => string.IsNullOrEmpty(i.Type) || !i.Type.Equals(_LICENSE_RESULT_TYPE)))
+                foreach (Vulnerability vulnerability in test.Vulnerabilities.Where(i => !string.IsNullOrEmpty(i.Type) && i.Type.Equals(_LICENSE_RESULT_TYPE)))
                 {
                     //Add rule id if not exits in collection
                     if (!run.Tool.Driver.Rules.Any(i => i.Id == vulnerability.Id))
@@ -78,7 +77,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
             //JSON schema has no version information. Pin to 1.0 for now.
             driver.Version = "1.0.0";
             driver.SemanticVersion = "1.0.0";
-            driver.InformationUri = new Uri("https://docs.snyk.io/products/snyk-open-source");
+            driver.InformationUri = new Uri("https://docs.snyk.io/products/snyk-open-source/licenses");
 
             return driver;
         }
@@ -88,7 +87,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
             ReportingDescriptor descriptor = new ReportingDescriptor();
 
             descriptor.Id = item.Id;
-            descriptor.Name = $"{item.Name}@{item.Version}";
+            descriptor.Name = item.License;
             descriptor.ShortDescription = new MultiformatMessageString()
             {
                 Text = $"{item.Title} in {item.Name}@{item.Version}",
@@ -96,8 +95,8 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
             };
             descriptor.FullDescription = new MultiformatMessageString()
             {
-                Text = item.Description,
-                Markdown = item.Description,
+                Text = $"{item.Title} in {item.Name}@{item.Version}",
+                Markdown = $"{item.Title} in {item.Name}@{item.Version}",
             };
 
             //Help text includes refs + triage advice
@@ -128,7 +127,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
             }
 
             //Set the type
-            descriptor.SetProperty("type", item.Type ?? "vulnerability");
+            descriptor.SetProperty("type", item.Type);
 
             //Use for GH Security Advisories
             FailureLevel level = FailureLevel.None;
@@ -140,13 +139,9 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
             var tags = new List<string>()
             {
                 "security",
+                item.License,
                 item.PackageManager,
             };
-
-            if (item.Identifiers.ContainsKey(_CWE_IDENTIFIER_KEY))
-            {
-                tags.AddRange(item.Identifiers[_CWE_IDENTIFIER_KEY]);
-            }
 
             descriptor.SetProperty("tags", tags);
 
@@ -157,7 +152,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
         {
             //Set message text
             var message = string.Empty;
-            message = $"This file introduces a vulnerable {item.PackageName} package with a {item.SeverityWithCritical} severity vulnerability.";
+            message = string.Join(" ", item.LegalInstructions.Select(i => i.LegalContent.Trim()));
 
             //set the result metadata
             Result result = new Result
@@ -201,6 +196,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
             //Set the unique fingerprint
             var fingerprints = new List<string>() {
                 item.Id,
+                item.Type,
                 item.PackageManager,
                 item.PackageName,
                 item.Version,
@@ -213,9 +209,6 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
             result.SetProperty("packageManager", item.PackageManager);
             result.SetProperty("packageName", item.PackageName);
             result.SetProperty("packageVersion", item.Version);
-            result.SetProperty("cvss3BaseScore", item.Cvss3BaseScore.ToString());
-            result.SetProperty("cvss3Vector", item.Cvss3Vector);
-            result.SetProperty("vulnPublicationDate", item.PublicationTime);
 
             if (item.Semver.Vulnerable.Any())
             {
@@ -227,34 +220,6 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
                 result.SetProperty("patchedVersion", item.FixedIn);
             }
 
-            var cves = new List<string>();
-            if (item.Identifiers.ContainsKey(_CVE_IDENTIFIER_KEY))
-            {
-                cves.AddRange(item.Identifiers[_CVE_IDENTIFIER_KEY]);
-            }
-            result.SetProperty("cve", cves);
-
-            var cwes = new List<string>();
-            if (item.Identifiers.ContainsKey(_CWE_IDENTIFIER_KEY))
-            {
-                cwes.AddRange(item.Identifiers[_CWE_IDENTIFIER_KEY]);
-            }
-            result.SetProperty("cwe", cwes);
-
-            //Add other identifiers to the xref
-            var xrefs = new List<string>();
-            foreach (string key in item.Identifiers.Keys)
-            {
-                //Skip cve / cwe with dedicated elements
-                if (key.Equals(_CVE_IDENTIFIER_KEY) || key.Equals(_CWE_IDENTIFIER_KEY))
-                {
-                    continue;
-                }
-
-                xrefs.AddRange(item.Identifiers[key]);
-            }
-            result.SetProperty("xref", xrefs);
-
             return result;
         }
 
@@ -264,29 +229,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Converters
             level = FailureLevel.None;
             rank = RankConstants.None;
 
-            //Failure level by cvss score
-            if (cvss3score >= 9.0)
-            {
-                level = FailureLevel.Error;
-                rank = cvss3score;
-            }
-            if (cvss3score >= 7.0 && cvss3score < 9.0)
-            {
-                level = FailureLevel.Error;
-                rank = cvss3score;
-            }
-            else if (cvss3score >= 4.0 && cvss3score < 7.0)
-            {
-                level = FailureLevel.Warning;
-                rank = cvss3score;
-
-            }
-            else if (cvss3score > 0 && cvss3score < 4.0)
-            {
-                level = FailureLevel.Note;
-                rank = cvss3score;
-            }
-            else if (severityWithCritical.Equals("critical", StringComparison.OrdinalIgnoreCase))
+            if (severityWithCritical.Equals("critical", StringComparison.OrdinalIgnoreCase))
             {
                 level = FailureLevel.Error;
                 rank = RankConstants.Critical;

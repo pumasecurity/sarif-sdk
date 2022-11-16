@@ -126,6 +126,12 @@
     <EmbeddedResource Include="TestData\SnykOpenSourceConverter\Inputs\ValidResult.json" />
     <EmbeddedResource Include="TestData\SnykOpenSourceConverter\ExpectedOutputs\NoResults.sarif" />
     <EmbeddedResource Include="TestData\SnykOpenSourceConverter\ExpectedOutputs\ValidResults.sarif" />
+    <EmbeddedResource Include="TestData\SnykLicenseConverter\Inputs\InvalidResults.json" />
+    <EmbeddedResource Include="TestData\SnykLicenseConverter\Inputs\NoResults.json" />
+    <EmbeddedResource Include="TestData\SnykLicenseConverter\Inputs\ValidResults.json" />
+    <EmbeddedResource Include="TestData\SnykLicenseConverter\Inputs\ValidResult.json" />
+    <EmbeddedResource Include="TestData\SnykLicenseConverter\ExpectedOutputs\NoResults.sarif" />
+    <EmbeddedResource Include="TestData\SnykLicenseConverter\ExpectedOutputs\ValidResults.sarif" />
   </ItemGroup>
 
   <ItemGroup>
