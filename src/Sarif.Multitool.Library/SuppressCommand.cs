@@ -55,7 +55,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Multitool
                 }
                 if (options.ResultsGuids != null)
                 {
-                    Console.WriteLine($"Suppressing {options.ResultsGuids.Count()} of {currentSarifLog.Runs.Sum(i => i.Results.Count)} results.");
+                    Console.WriteLine($"Suppressing {options.ResultsGuids.Count()} of {currentSarifLog.Runs?.Sum(i => i.Results.Count)} results.");
 #if DEBUG
                     foreach (var result in options.ResultsGuids)
                     {
@@ -65,7 +65,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Multitool
                 }
                 else
                 {
-                    Console.WriteLine($"Suppressing {currentSarifLog.Runs.Sum(i => i.Results.Count)} of {currentSarifLog.Runs.Sum(i => i.Results.Count)} results.");
+                    Console.WriteLine($"Suppressing {currentSarifLog.Runs?.Sum(i => i.Results.Count)} of {currentSarifLog.Runs?.Sum(i => i.Results.Count)} results.");
                 }
 
                 SarifLog reformattedLog = new SuppressVisitor(options.Justification,
@@ -113,6 +113,11 @@ namespace Microsoft.CodeAnalysis.Sarif.Multitool
             // Read the log
             SarifLog log = ReadSarifFile<SarifLog>(this.FileSystem, options.InputFilePath);
 
+            var guids = new List<string>();
+
+            if (log.Runs == null)
+                return guids;
+
             foreach (Run run in log.Runs)
             {
                 if (run.Results == null) { continue; }
@@ -133,7 +138,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Multitool
 
             // Remove any Runs with no remaining matches
             log.Runs = log.Runs.Where(r => (r?.Results?.Count ?? 0) > 0).ToList();
-            var guids = log.Runs.SelectMany(x => x.Results.Select(y => y.Guid)).ToList();
+            guids = log.Runs.SelectMany(x => x.Results.Select(y => y.Guid)).ToList();
 
             return guids;
         }

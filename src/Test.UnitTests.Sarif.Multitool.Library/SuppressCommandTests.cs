@@ -21,6 +21,7 @@ namespace Microsoft.CodeAnalysis.Sarif.Multitool
     public class SuppressCommandTests
     {
         private const int DateTimeAssertPrecision = 500;
+        private static readonly TestAssetResourceExtractor s_extractor = new TestAssetResourceExtractor(typeof(SuppressCommandTests));
 
         [Fact]
         public void SuppressCommand_ShouldReturnFailure_WhenBadArgumentsAreSupplied()
@@ -91,6 +92,41 @@ namespace Microsoft.CodeAnalysis.Sarif.Multitool
                 var command = new SuppressCommand();
                 command.Run(options).Should().Be(CommandBase.FAILURE);
             }
+        }
+
+        [Fact]
+        public void SuppressCommand_ShouldNotFail_NullRun()
+        {
+            string filePath = "NullRun.sarif";
+            string outFilePath = "NullRun.suppressed.sarif";
+            File.WriteAllText(filePath, s_extractor.GetResourceText(filePath));
+
+            var options = new SuppressOptions[]
+            {
+                new SuppressOptions
+                {
+                    Alias = "some alias",
+                    InputFilePath = filePath,
+                    OutputFilePath = outFilePath,
+                    Justification = "justified",
+                    Status = SuppressionStatus.Accepted,
+                    Force = true
+                },
+                new SuppressOptions
+                {
+                    Expression = "RuleId == 'test rule'",
+                    ResultsGuids = new List<string> { Guid.NewGuid().ToString() },
+                    Alias = "some alias",
+                    InputFilePath = filePath,
+                    OutputFilePath = outFilePath,
+                    Justification = "justified",
+                    Status = SuppressionStatus.Accepted,
+                    Force = true
+                }
+            };
+
+            foreach (SuppressOptions option in options)
+                RunAndVerifyExitCode(0, option);
         }
 
         [Fact]
@@ -208,6 +244,12 @@ namespace Microsoft.CodeAnalysis.Sarif.Multitool
             {
                 VerifySuppressCommand(options);
             }
+        }
+
+        private static void RunAndVerifyExitCode(int expectedExitCode, SuppressOptions options)
+        {
+            int exitCode = new SuppressCommand().Run(options);
+            Assert.Equal(expectedExitCode, exitCode);
         }
 
         private static void VerifySuppressCommand(SuppressOptions options)
