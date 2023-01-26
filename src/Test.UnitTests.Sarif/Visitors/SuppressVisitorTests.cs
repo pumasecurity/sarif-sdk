@@ -204,7 +204,7 @@ namespace Microsoft.CodeAnalysis.Sarif.UnitTests.Visitors
                 expiryInDays = 1,
                 expiryUtc = default(DateTime?),
                 suppressionStatus = SuppressionStatus.Accepted,
-                resultGuids = new List<string>() { "704cf481-0cfd-46ae-90cd-533cdc6c3bb4", "ecaa7988-5cef-411b-b468-6c20851d6994", "c65b76c7-3cd6-4381-9216-430bcc7fab2d", "04753e26-d297-43e2-a7f7-ae2d34c398c9", "54cb1f58-f401-4f8e-8f42-f2482a123b85" },
+                resultGuids = new List<string>() { "704cf481-0cfd-46ae-90cd-533cdc6c3bb4", "ecaa7988-5cef-411b-b468-6c20851d6994", "c65b76c7-3cd6-4381-9216-430bcc7fab2d", "04753e26-d297-43e2-a7f7-ae2d34c398c9", "54cb1f58-f401-4f8e-8f42-f2482a123b85", "713f7a10-046e-4b6b-ad50-1699b6d47703" },
             };
 
             VerifySuppressVisitor(testCase.alias,
