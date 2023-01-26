@@ -50,6 +50,7 @@ namespace Microsoft.CodeAnalysis.Sarif
         {
             List<string> ruleIds = new List<string>() { "TEST001", "TEST002", "TEST003", "TEST004", "TEST005" };
             List<string> guids = new List<string>() { "704cf481-0cfd-46ae-90cd-533cdc6c3bb4", "ecaa7988-5cef-411b-b468-6c20851d6994", "c65b76c7-3cd6-4381-9216-430bcc7fab2d", "04753e26-d297-43e2-a7f7-ae2d34c398c9", "54cb1f58-f401-4f8e-8f42-f2482a123b85" };
+            List<string> correlationGuids = new List<string>() { "713f7a10-046e-4b6b-ad50-1699b6d47703", "caef7383-15d7-4f4b-88d5-ba3855454381", "6adda312-4df1-4ad1-82f7-a63202a18987", "f769277b-8a85-4803-97b4-293110e28b85", "41d79fbf-63df-446a-aae2-df56ef4c9452" };
             List<Uri> filePaths = GenerateFakeFiles(GeneratorBaseUri, random.Next(20) + 1).Select(a => new Uri(a)).ToList();
             int results = resultCount == null ? random.Next(100) : (int)resultCount;
 
@@ -65,7 +66,7 @@ namespace Microsoft.CodeAnalysis.Sarif
                     }
                 },
                 Artifacts = GenerateFiles(filePaths),
-                Results = GenerateFakeResults(random, ruleIds, guids, filePaths, results, dataFields)
+                Results = GenerateFakeResults(random, ruleIds, guids, correlationGuids, filePaths, results, dataFields)
             };
         }
 
@@ -97,7 +98,7 @@ namespace Microsoft.CodeAnalysis.Sarif
             return results;
         }
 
-        public static IList<Result> GenerateFakeResults(Random random, List<string> ruleIds, List<string> guids, List<Uri> filePaths, int resultCount, RandomDataFields dataFields = RandomDataFields.None)
+        public static IList<Result> GenerateFakeResults(Random random, List<string> ruleIds, List<string> guids, List<string> correlationGuids, List<Uri> filePaths, int resultCount, RandomDataFields dataFields = RandomDataFields.None)
         {
             List<Result> results = new List<Result>();
             for (int i = 0; i < resultCount; i++)
@@ -110,6 +111,7 @@ namespace Microsoft.CodeAnalysis.Sarif
                     RuleId = ruleIds[ruleIndex],
                     RuleIndex = ruleIndex,
                     Guid = guids[guidIndex],
+                    CorrelationGuid = correlationGuids[guidIndex],
                     Locations = new Location[]
                     {
                         new Location
